@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kubelet-monitor
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: kubelet
+spec:
+  endpoints:
+  - port: 10250
+    honorLabels: true
+    targetPort: 10250
+    path: /metrics
+
