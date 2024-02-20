@@ -60,6 +60,6 @@ jobs:
 
     - name: Deploying to GKE with Helm
       run: |
-        helm upgrade onlineboutique https://github.com/RodoVR2403/microservices-demo-google/tree/dev/helm-chart \
+        helm upgrade onlineboutique oci://us-docker.pkg.dev/online-boutique-ci/charts/onlineboutique \
           --install \
 
