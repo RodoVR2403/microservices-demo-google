@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: frontend-monitor
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: frontend
+  endpoints:
+  - port: 9095
+    interval: 10s
+
