@@ -5,7 +5,7 @@
 images:
   repository: us-east4-docker.pkg.dev/alien-segment-410723/microservices-demo-final
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "latest"
 
 serviceAccounts:
   # Specifies whether service accounts should be created.
