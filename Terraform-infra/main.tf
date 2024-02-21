@@ -46,7 +46,7 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 
   node_config {
     preemptible  = true
-    machine_type = "e2-custom-4-2560"
+    machine_type = "e2-custom-4-5120"
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = "token-microservices@alien-segment-410723.iam.gserviceaccount.com"
