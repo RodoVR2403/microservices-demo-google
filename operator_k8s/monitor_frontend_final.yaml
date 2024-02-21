@@ -8,6 +8,6 @@ spec:
     matchLabels:
       app: frontend
   endpoints:
-  - port: 8080
+  - port: "8080"
     interval: 10s
 

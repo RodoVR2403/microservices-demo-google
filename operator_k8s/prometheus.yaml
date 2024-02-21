@@ -19,3 +19,15 @@ spec:
   serviceAccountName: prometheus
   version: v2.22.1
   serviceMonitorSelector: {}
+  remoteWrite:
+  - url: https://prometheus-prod-13-prod-us-east-0.grafana.net/api/prom/push
+    basicAuth:
+      username:
+        name: kubepromsecret2
+        key: username
+      password:
+        name: kubepromsecret2
+        key: password
+  replicaExternalLabelName: "__replica__"
+  externalLabels:
+    cluster: "microservices-cluster"
