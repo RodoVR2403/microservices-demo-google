@@ -9,6 +9,8 @@ env:
   GC_PROJECT_ID: "alien-segment-410723"
   GKE_CLUSTER: microservices-cluster    # cluster name
   GKE_ZONE: us-east4   # cluster zone
+  ARTIFACT_REGISTRY_REPO_HELM: "helm-chart-repo"  # Artifact Registry repository name
+  CHART_PATH: "./helm-chart"  # Path to your Helm chart in the repository
 
 jobs:
   build-push-deploy:
@@ -43,23 +45,31 @@ jobs:
           docker push $image_name
         done
 
-        
     - name: Install gke-gcloud-auth-plugin
       run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
           sudo curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
           sudo apt-get update
           sudo apt-get install google-cloud-cli-gke-gcloud-auth-plugin
+
     - name: Kubernetes context added (GKE)
       run: gcloud container clusters get-credentials ${{ env.GKE_CLUSTER }} --region ${{ env.GKE_ZONE }} --project ${{ env.GC_PROJECT_ID }}
-   
-    
+
     - name: Install Helm
       run: |
         curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
-    - name: Deploying to GKE with Helm
+    - name: Package Helm chart
       run: |
-        helm upgrade onlineboutique oci://us-docker.pkg.dev/online-boutique-ci/charts/onlineboutique \
-          --install \
+        helm package ${{ env.CHART_PATH }}
 
+    - name: Upload Helm chart to Artifact Registry
+      run: |
+        helm push onlineboutique-0.9.0.tgz oci://us-east4-docker.pkg.dev/alien-segment-410723/helm-chart-repo
+   
+    
+    - name: Deploying to GKE with Helm from Artifact Registry
+      run: |
+       helm upgrade onlineboutique \
+        oci://us-east4-docker.pkg.dev/alien-segment-410723/helm-chart-repo/onlineboutique --version 0.9.0 \
+        --install
