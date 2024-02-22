@@ -1,0 +1,24 @@
+name: Create PR from Dev to Prod
+on:
+  workflow_run:
+    workflows: ["Build,Push to GCR, and Deploy to GKE"]
+    types:
+      - completed
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: prod
+          title: Merge changes from dev to prod
+          body: |
+            This PR was automatically created to merge changes from dev to prod.
+

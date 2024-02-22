@@ -1,0 +1,24 @@
+name: Create PR from Dev to Prod for Infrastructure Changes
+on:
+  workflow_run:
+    workflows: ["Terraform Apply"]
+    types:
+      - completed
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: prod
+          title: Merge changes from dev to prod
+          body: |
+            This PR was automatically created to merge changes from dev to prod.
+
