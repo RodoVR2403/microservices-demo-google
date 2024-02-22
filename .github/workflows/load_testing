@@ -1,12 +1,12 @@
 name: Load Testing
+
 on:
   workflow_run:
     workflows: ["Build,Push to GCR, and Deploy to GKE"]
     types:
       - completed
-
 jobs:
-  load_test_with_k6:
+  load-test-k6:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
