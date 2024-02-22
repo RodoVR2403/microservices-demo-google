@@ -4,6 +4,7 @@ on:
     workflows: ["Build,Push to GCR, and Deploy to GKE"]
     types:
       - completed
+
 jobs:
   load-test-k6:
     runs-on: ubuntu-latest
