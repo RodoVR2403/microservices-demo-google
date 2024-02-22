@@ -9,19 +9,19 @@ jobs:
   load-test-k6:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+    - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Instaling k6
+    - name: Instaling k6
         run: |
-            sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-            echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-            sudo apt-get update
-            sudo apt-get install k6
-
-      - name: Loging to grafana k6 cloud
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+    
+    - name: Loging to grafana k6 cloud
         run: |
-            k6 login cloud --token ${{ secrets.GRAFANA_TOKEN }}
+          k6 login cloud --token ${{ secrets.GRAFANA_TOKEN }}
 
-      - name: Run test
+    - name: Run test
         run: k6 cloud k6/test.js
