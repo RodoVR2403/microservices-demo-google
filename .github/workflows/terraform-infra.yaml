@@ -76,6 +76,5 @@ jobs:
       env:
         GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
     - name: Terraform Apply
-      run: terraform apply -var-file=production.tfvars -state=terraform_state/terraform.tfstate
-      env:
+      run: terraform apply 
         GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
