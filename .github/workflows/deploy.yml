@@ -40,6 +40,7 @@ jobs:
 
     - name: Deploying to GKE with Helm
       run: |
-        helm upgrade onlineboutique oci://us-docker.pkg.dev/online-boutique-ci/charts/onlineboutique \
-          --install \
+        helm upgrade onlineboutique \
+        oci://us-east4-docker.pkg.dev/alien-segment-410723/helm-chart-repo/onlineboutique --version 0.9.0 \
+        --install
 
