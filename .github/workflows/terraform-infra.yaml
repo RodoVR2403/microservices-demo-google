@@ -77,4 +77,5 @@ jobs:
         GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
     - name: Terraform Apply
       run: terraform apply 
+      env:  
         GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
