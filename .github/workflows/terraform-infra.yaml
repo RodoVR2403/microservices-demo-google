@@ -71,7 +71,10 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: terraform_state
-
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
     - name: Terraform Apply
       run: terraform apply -var-file=production.tfvars -state=terraform_state/terraform.tfstate
       env:
