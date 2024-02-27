@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: Terraform Workflow
 
 on:
   push:
@@ -6,10 +6,9 @@ on:
       - 'Terraform-infra/**'
 
 jobs:
-  terraform:
-    name: 'Terraform Plan'
+  terraform_init_and_plan:
+    name: Terraform Init and Plan
     runs-on: ubuntu-latest
-    
     defaults:
       run:
         shell: bash
@@ -17,36 +16,66 @@ jobs:
         working-directory: ./Terraform-infra 
         
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Decrypt GCR_KEY
-        run: |
+    - name: Checkout code
+      uses: actions/checkout@v2
+  
+    - name: Decrypt GCR_KEY
+      run: |
           echo "${{ secrets.GCR_KEY }}" | base64 -d > /tmp/gcr-key.json
-    
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_token: /tmp/gcr-key.json
 
-      - name: Terraform Init
-        run: |
-           pwd
-           ls 
-           
-           terraform init 
-           
-        env:
-          GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
-      
-      - name: Terraform Plan 
-        id: terraform_plan
-        run: |
-          terraform plan -out=tfplan.out
-          echo "::set-output name=plan_path::tfplan.out"
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: /tmp/gcr-key.json
 
-      - name: Upload Terraform Plan Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-plan
-          path: ${{ steps.terraform_plan.outputs.plan_path }}
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
+    - name: Terraform Plan
+      run: terraform plan
+      env:
+        GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
+    # This step creates a shared workspace for subsequent jobs
+    - name: Set up workspace
+      uses: actions/checkout@v2
+
+  terraform_apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        shell: bash
+        # Inform a working directory if .tf files are not in the root folder
+        working-directory: ./Terraform-infra 
+        
+    # Depend on the first job to ensure it runs after Terraform init and plan
+    needs: terraform_init_and_plan
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+   
+    - name: Decrypt GCR_KEY
+      run: |
+          echo "${{ secrets.GCR_KEY }}" | base64 -d > /tmp/gcr-key.json
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: /tmp/gcr-key.json
+
+    # This step copies the initialized Terraform state from the previous job
+    - name: Copy Terraform state from previous job
+      uses: actions/checkout@v2
+      with:
+        path: terraform_state
+    - name: Terraform Init
+      run: terraform init
+      env:
+        GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
+    - name: Terraform Apply
+      run: terraform apply 
+      env:  
+        GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
