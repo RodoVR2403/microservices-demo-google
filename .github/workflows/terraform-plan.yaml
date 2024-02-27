@@ -13,11 +13,10 @@ jobs:
     defaults:
       run:
         shell: bash
-        #Inform a working directory if .tf files are not in root folder
+        # Inform a working directory if .tf files are not in the root folder
         working-directory: ./Terraform-infra 
         
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v2
         
@@ -45,3 +44,9 @@ jobs:
         run: |
           terraform plan -out=tfplan.out
           echo "::set-output name=plan_path::tfplan.out"
+
+      - name: Upload Terraform Plan Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: terraform-plan
+          path: ${{ steps.terraform_plan.outputs.plan_path }}
