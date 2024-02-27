@@ -1,7 +1,7 @@
 name: Create PR from Dev to Prod for Infrastructure Changes
 on:
   workflow_run:
-    workflows: ["Terraform Apply"]
+    workflows: ["Terraform Workflow"]
     types:
       - completed
 
