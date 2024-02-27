@@ -7,7 +7,7 @@ on:
 
 jobs:
   terraform:
-    name: 'Terraform'
+    name: 'Terraform Apply'
     runs-on: ubuntu-latest
     environment: production
     
@@ -31,18 +31,8 @@ jobs:
         with:
          cli_config_credentials_token: /tmp/gcr-key.json
 
-      - name: Terraform Init
-        run: |
-           pwd
-           ls 
-           
-           terraform init 
-           
-        env:
-          GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
-
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve 
+        run: terraform apply ${{ steps.terraform_plan.outputs.plan_path }}
         env:
           GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
