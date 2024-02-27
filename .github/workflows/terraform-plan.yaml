@@ -1,0 +1,47 @@
+name: Terraform Plan
+
+on:
+  push:
+    paths:
+      - 'Terraform-infra/**'
+
+jobs:
+  terraform:
+    name: 'Terraform Plan'
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+        #Inform a working directory if .tf files are not in root folder
+        working-directory: ./Terraform-infra 
+        
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        
+      - name: Decrypt GCR_KEY
+        run: |
+          echo "${{ secrets.GCR_KEY }}" | base64 -d > /tmp/gcr-key.json
+    
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: /tmp/gcr-key.json
+
+      - name: Terraform Init
+        run: |
+           pwd
+           ls 
+           
+           terraform init 
+           
+        env:
+          GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
+      
+      - name: Terraform Plan 
+        id: terraform_plan
+        run: |
+          terraform plan -out=tfplan.out
+          echo "::set-output name=plan_path::tfplan.out"
