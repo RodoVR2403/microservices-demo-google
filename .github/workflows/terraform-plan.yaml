@@ -44,7 +44,8 @@ jobs:
         run: |
           terraform plan -out=tfplan.out
           echo "::set-output name=plan_path::tfplan.out"
-
+        env:
+          GOOGLE_CREDENTIALS:  /tmp/gcr-key.json
       - name: Upload Terraform Plan Artifact
         uses: actions/upload-artifact@v2
         with:
