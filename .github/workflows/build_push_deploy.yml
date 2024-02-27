@@ -1,4 +1,4 @@
-name: Build, Push to GCR, and Deploy to GKE
+name: Deploy to GKE
 
 on:
   push:
@@ -11,39 +11,19 @@ env:
   GKE_ZONE: us-east4   # cluster zone
 
 jobs:
-  build-push-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
 
     - name: Authenticate with GC
       run: echo ${{ secrets.GCR_KEY }} | base64 -d > /tmp/gcr-key.json && gcloud auth activate-service-account service-account@alien-segment-410723.iam.gserviceaccount.com --key-file=/tmp/gcr-key.json
 
-    - name: Configure docker
-      run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
-    - name: Gcloud docker login
-      run: gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://us-east4-docker.pkg.dev
-
-    - name: Building and Pushing image
-      run: |
-        GCR_PROJECT_ID="alien-segment-410723"
-        LOCATION="us-east4"
-        REPOSITORY="microservices-demo-final_prod"
-        services=( $(find src/* -type f -name Dockerfile -exec dirname {} \;) )
-        for service in "${services[@]}"; do
-          image_name="${LOCATION}-docker.pkg.dev/${GCR_PROJECT_ID}/${REPOSITORY}/${service#src/}:latest"
-          docker build -t $image_name $service
-          docker buildx build -t $image_name --push $service
-          docker push $image_name
-        done
-
-        
     - name: Install gke-gcloud-auth-plugin
       run: |
           echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
