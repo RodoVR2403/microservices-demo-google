@@ -5,13 +5,13 @@ provider "google" {
 
 terraform {
   backend "gcs" {
-    bucket  = "microservices-bucket-tfstate"
+    bucket  = "microservices-bucket-tfstate-prod"
     prefix  = "terraform/state"
   }
 }
 
 # VPC and Subnets
-resource "google_compute_network" "my_vpc" {
+resource "google_compute_network" "my_vpc_prod" {
   name                    = var.network_name
   auto_create_subnetworks = false
 }
@@ -31,15 +31,15 @@ resource "google_compute_subnetwork" "prod_subnet" {
 }
 
 # GKE Cluster
-resource "google_container_cluster" "my_gke_cluster" {
+resource "google_container_cluster" "my_gke_cluster_prod" {
   name     = var.gke_cluster_name
   location = var.region
    remove_default_node_pool = true
   initial_node_count       = 1
 }
 
-resource "google_container_node_pool" "primary_preemptible_nodes" {
-  name       = "my-node-pool"
+resource "google_container_node_pool" "primary_preemptible_nodes_prod" {
+  name       = "my-node-pool_prod"
   location   = "us-east4"
   cluster    = google_container_cluster.my_gke_cluster.id
   node_count = 1

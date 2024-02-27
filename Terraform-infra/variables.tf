@@ -15,7 +15,7 @@ variable "zones" {
 
 variable "network_name" {
   description = "Name of the VPC network" 
-  default     = "microservices-vpc"
+  default     = "microservices-vpc_prod"
 }
 
 variable "subnet_cidr" {
@@ -35,7 +35,7 @@ variable "prod_subnet_name" {
 
 variable "gke_cluster_name" {
   description = "Name of the GKE cluster"
-  default     = "microservices-cluster"
+  default     = "microservices-cluster_prod"
 }
 
 variable "artifact_registry_repo_name" {

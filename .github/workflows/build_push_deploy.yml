@@ -7,7 +7,7 @@ on:
 
 env:
   GC_PROJECT_ID: "alien-segment-410723"
-  GKE_CLUSTER: microservices-cluster    # cluster name
+  GKE_CLUSTER: microservices-cluster_prod    # cluster name
   GKE_ZONE: us-east4   # cluster zone
 
 jobs:
@@ -34,7 +34,7 @@ jobs:
       run: |
         GCR_PROJECT_ID="alien-segment-410723"
         LOCATION="us-east4"
-        REPOSITORY="microservices-demo-final"
+        REPOSITORY="microservices-demo-final_prod"
         services=( $(find src/* -type f -name Dockerfile -exec dirname {} \;) )
         for service in "${services[@]}"; do
           image_name="${LOCATION}-docker.pkg.dev/${GCR_PROJECT_ID}/${REPOSITORY}/${service#src/}:latest"
